@@ -21,8 +21,8 @@ template <int SIZE>
 class FixedBuffer
 {
 public:
-    FixedBuffer() : cur_(data_) { setCookie(cookieStart); }
-    ~FixedBuffer() { setCookie(cookieEnd); }
+    FixedBuffer() : cur_(data_) {}
+    ~FixedBuffer();
 
     //插入长度为len的buf字符数组
     void append(const char *buf, int len)
@@ -52,8 +52,8 @@ public:
 
 private:
     const char *end() const { return data_ + sizeof(data_); }
-    char data_[SIZE];  //内部存储字符的数字
-    char *cur_;        //类似尾后指针，可插入的第一个位置
+    char data_[SIZE]; //内部存储字符的数字
+    char *cur_;       //类似尾后指针，可插入的第一个位置
 };
 } // namespace detail
 
@@ -159,7 +159,6 @@ inline LogStream &operator<<(LogStream &s, const Fmt &fmt)
     s.append(fmt.data(), fmt.length());
     return s;
 }
-
 
 } // namespace hxmmxh
 

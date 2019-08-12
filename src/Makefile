@@ -17,26 +17,26 @@ lib: $(LIB)
 
 $(OBJS):$(HEADERS) 
 
-$(LIB) : $(OBJS) ../Time/Time.a ../Thread/Thread.a
-	ar -x ../Time/Time.a;\
-	ar -x ../Thread/Thread.a;\
+$(LIB) : $(OBJS) Time/Time.a Thread/Thread.a
+	ar -x Time/Time.a;\
+	ar -x Thread/Thread.a;\
 	ar rcs $@ *.o
 
 $(TEST):$(LIB) 
 
 
-../Time/Time.a:
-	cd ../Time;make
+Time/Time.a:
+	cd Time;make
 
-../Thread/Thread.a:
-	cd ../Thread;make
+Thread/Thread.a:
+	cd Thread;make
 
 
 clean: cleanTime cleanThread
 	-rm *.o  $(TEST) $(LIB) $(LOGFILE)
 
 cleanTime:
-	cd ../Time;make clean
+	cd Time;make clean
 
 cleanThread:
-	cd ../Thread;make clean
+	cd Thread;make clean

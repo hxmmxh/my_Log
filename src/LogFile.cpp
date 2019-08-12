@@ -76,6 +76,25 @@ void AppendFile::append(const char *logline, const size_t len)
   writtenBytes_ += len;
 }
 
+LogFile::LogFile(const string &basename,
+                 off_t rollSize,
+                 bool threadSafe,
+                 int flushInterval,
+                 int checkEveryN)
+    : basename_(basename),
+      rollSize_(rollSize),
+      flushInterval_(flushInterval),
+      checkEveryN_(checkEveryN),
+      count_(0),
+      mutex_(threadSafe ? new std::mutex() : NULL),
+      startOfPeriod_(0),
+      lastRoll_(0),
+      lastFlush_(0)
+{
+  //验证basename是文件名，不是路径名
+  assert(basename.find('/') == string::npos);
+  rollFile(); //新建一个文件
+}
 
 LogFile::~LogFile() = default;
 

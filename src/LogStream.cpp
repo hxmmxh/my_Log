@@ -81,6 +81,12 @@ template class FixedBuffer<kLargeBuffer>;
 } // namespace hxmmxh
 
 template <int SIZE>
+FixedBuffer<SIZE>::~FixedBuffer()
+{
+
+}
+
+template <int SIZE>
 const char *FixedBuffer<SIZE>::debugString()
 {
     *cur_ = '\0';
