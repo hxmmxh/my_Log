@@ -113,6 +113,10 @@ inline Logger::LogLevel Logger::logLevel()
 //__LINE__：在源代码中插入当前源代码行号；
 //__FILE__：在源文件中插入当前源文件名；
 //__func__指示当前函数名
+//检查输入是否为空
+// #是“字符串化”的意思。出现在宏定义中的#是把跟在后面的参数转换成一个字符串
+//##是一个连接符号，用于把参数连在一起
+//邻近字符串连接 "'" #val "' Must be non NULL"会合并成一个大字符串
 #define LOG_TRACE                                          \
   if (hxmmxh::Logger::logLevel() <= hxmmxh::Logger::TRACE) \
   hxmmxh::Logger(__FILE__, __LINE__, hxmmxh::Logger::TRACE, __func__).stream()
@@ -130,23 +134,6 @@ inline Logger::LogLevel Logger::logLevel()
 #define LOG_SYSFATAL hxmmxh::Logger(__FILE__, __LINE__, true).stream() //系统严重错误
 
 const char *strerror_tl(int savedErrno);
-
-//检查输入是否为空
-// #是“字符串化”的意思。出现在宏定义中的#是把跟在后面的参数转换成一个字符串
-//##是一个连接符号，用于把参数连在一起
-//邻近字符串连接 "'" #val "' Must be non NULL"会合并成一个大字符串
-#define CHECK_NOTNULL(val) \
-  hxmmxh::CheckNotNull(__FILE__, __LINE__, "'" #val "' Must be non NULL", (val))
-
-template <typename T>
-T *CheckNotNull(Logger::SourceFile file, int line, const char *names, T *ptr)
-{
-  if (ptr == NULL)
-  {
-    Logger(file, line, Logger::FATAL).stream() << names;
-  }
-  return ptr;
-}
 
 } // namespace hxmmxh
 

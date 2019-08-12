@@ -5,6 +5,7 @@
 
 #include "LogStream.h"
 #include "../Thread/ThreadPool.h"
+#include "../Thread/Thread.h"
 
 #include <atomic>
 #include <condition_variable>
@@ -16,25 +17,31 @@
 
 namespace hxmmxh
 {
-class AsyncLoggingDoubleBuffering 
+class AsyncLoggingDoubleBuffering
 {
 public:
     AsyncLoggingDoubleBuffering(const string &basename,
-                                size_t rollSize,
+                                off_t rollSize,
                                 int flushInterval = 3);
-
-    //前端和后端的接口
-    //logline代表一条完整的日志消息
+    ~AsyncLoggingDoubleBuffering()
+    {
+        if (running_)
+        {
+            stop();
+        }
+    }
+    //前端和后端的接口，往缓冲区里写消息
+    //logline代表一条完整的日志消息,len是它的长度
     void append(const char *logline, int len);
 
     void start()
     {
         running_ = true;
-        thread_=std::thread(std::bind(&AsyncLoggingDoubleBuffering::threadFunc, this));
-        latch_.wait();//等待直到计数器为0
+        thread_.start();
+        latch_.wait(); //等待直到计数器为0
     }
 
-    void stop() 
+    void stop()
     {
         running_ = false;
         cond_.notify_one();
@@ -51,14 +58,15 @@ private:
     const int flushInterval_; //每隔flushInterval_秒进行一个交换写入操作
     std::atomic<bool> running_;
     const std::string basename_;
-    size_t rollSize_;
-    std::thread thread_;
+    const off_t rollSize_;
+    Thread thread_;
     CountDownLatch latch_; //计数器
+
     std::mutex mutex_;
     std::condition_variable cond_;
     BufferPtr currentBuffer_; //当前缓冲
     BufferPtr nextBuffer_;    //预备缓冲
-    BufferVector buffers_;    //待后端写入文件的缓冲块
+    BufferVector fullbuffers_;    //待后端写入文件的缓冲块
 };
 } // namespace hxmmxh
 

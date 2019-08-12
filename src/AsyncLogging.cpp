@@ -8,21 +8,23 @@
 
 using namespace hxmmxh;
 
-AsyncLoggingDoubleBuffering::AsyncLoggingDoubleBuffering(const string &basename, size_t rollSize, int flushInterval)
+AsyncLoggingDoubleBuffering::AsyncLoggingDoubleBuffering(const string &basename, off_t rollSize, int flushInterval)
     : flushInterval_(flushInterval),
       running_(false),
       basename_(basename),
       rollSize_(rollSize),
+      thread_(std::bind(&AsyncLoggingDoubleBuffering::threadFunc, this), "Logging"),
       latch_(1),
       currentBuffer_(new Buffer),
       nextBuffer_(new Buffer),
-      buffers_()
+      fullbuffers_()
 {
     currentBuffer_->bzero();
     nextBuffer_->bzero();
-    buffers_.reserve(16);
+    fullbuffers_.reserve(16);
 }
 
+//往缓冲区里写消息
 void AsyncLoggingDoubleBuffering::append(const char *logline, int len)
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -32,17 +34,19 @@ void AsyncLoggingDoubleBuffering::append(const char *logline, int len)
     }
     else
     {
-        buffers_.push_back(std::move(currentBuffer_));
+        fullbuffers_.push_back(std::move(currentBuffer_));
 
         if (nextBuffer_)
         {
             currentBuffer_ = std::move(nextBuffer_);
         }
+        //写入速度太快，备用缓冲也没有了的话，新建一个缓冲区
         else
         {
-            currentBuffer_.reset(new Buffer); // Rarely happens
+            currentBuffer_.reset(new Buffer); 
         }
         currentBuffer_->append(logline, len);
+        //通知开始写入文件
         cond_.notify_one();
     }
 }
@@ -71,14 +75,14 @@ void AsyncLoggingDoubleBuffering::threadFunc()
     {
       std::unique_lock<std::mutex> lock(mutex_);
       //前端写频率不高，buffers_为空，则超时三秒后交换，写入文件
-      if (buffers_.empty())  // unusual usage!
+      if (fullbuffers_.empty()) 
       {
           //等待超时或收到信号
           cond_.wait_for(lock, std::chrono::seconds(flushInterval_));
       }
-      buffers_.push_back(std::move(currentBuffer_));
+      fullbuffers_.push_back(std::move(currentBuffer_));
       currentBuffer_ = std::move(newBuffer1);
-      buffersToWrite.swap(buffers_);
+      buffersToWrite.swap(fullbuffers_);
       if (!nextBuffer_)
       {
         nextBuffer_ = std::move(newBuffer2);

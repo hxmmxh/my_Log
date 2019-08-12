@@ -47,15 +47,11 @@ public:
 
     //转换成标准的string，在末尾加上‘\0'终止符
     const char *debugString();
-    void setCookie(void (*cookie)()) { cookie_ = cookie; }
     string toString() const { return string(data_, length()); }
     StringPiece toStringPiece() const { return StringPiece(data_, length()); }
 
 private:
     const char *end() const { return data_ + sizeof(data_); }
-    static void cookieStart();
-    static void cookieEnd();
-    void (*cookie_)(); //函数指针
     char data_[SIZE];  //内部存储字符的数字
     char *cur_;        //类似尾后指针，可插入的第一个位置
 };
@@ -132,7 +128,6 @@ public:
     void resetBuffer() { buffer_.reset(); }
 
 private:
-    void staticCheck();
     template <typename T>
     void formatInteger(T);
 
@@ -165,17 +160,6 @@ inline LogStream &operator<<(LogStream &s, const Fmt &fmt)
     return s;
 }
 
-//将大整数加上单位，格式化成长度不超过5的字符串(包含单位，即最多4个数字)
-// (k, M, G, T, P, E)
-//SI单位制，分别为1000，10^6, 10^9, 10^12, 10^15, 10^18
-//要求n大于0
-string formatSI(int64_t n);
-
-////将大整数加上单位，格式化成长度不超过6的字符串
-// IEC (binary) (Ki, Mi, Gi, Ti, Pi, Ei).
-//IEC单位制，2^10, 2^20, 2^30, 2^40 ,2^50, 2^60
-//要求n大于0
-string formatIEC(int64_t n);
 
 } // namespace hxmmxh
 

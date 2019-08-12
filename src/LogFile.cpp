@@ -15,7 +15,7 @@ using namespace hxmmxh;
 //a:打开或新建一个文本文件，只允许在文件末尾追写
 //e:O_CLOEXEC
 //子进程默认是继承父进程打开的所有fd,如果句柄加入了这个设置,在execve替换进程时就会关闭设置这个选项的所有fd.
-FileUtil::AppendFile::AppendFile(StringArg filename)
+AppendFile::AppendFile(StringArg filename)
     : fp_(::fopen(filename.c_str(), "ae")), // 'e' for
       writtenBytes_(0)
 {
@@ -27,12 +27,12 @@ FileUtil::AppendFile::AppendFile(StringArg filename)
   ::setvbuf(fp_, buffer_, _IOFBF, sizeof(buffer_));
 }
 
-FileUtil::AppendFile::~AppendFile()
+AppendFile::~AppendFile()
 {
   ::fclose(fp_);
 }
 
-size_t FileUtil::AppendFile::write(const char *logline, size_t len)
+size_t AppendFile::write(const char *logline, size_t len)
 {
   //行为和fwrite一样
   //返回确切写入的字节数，可能比传入的字节数要少
@@ -41,14 +41,14 @@ size_t FileUtil::AppendFile::write(const char *logline, size_t len)
   return ::fwrite_unlocked(logline, 1, len, fp_);
 }
 
-void FileUtil::AppendFile::flush()
+void AppendFile::flush()
 {
   //强迫将缓冲区内的数据写回参数stream 指定的文件中。
   ::fflush(fp_);
 }
 
 //写入长度为len的logline日志
-void FileUtil::AppendFile::append(const char *logline, const size_t len)
+void AppendFile::append(const char *logline, const size_t len)
 {
   size_t n = write(logline, len);
   size_t remain = len - n;
@@ -76,155 +76,6 @@ void FileUtil::AppendFile::append(const char *logline, const size_t len)
   writtenBytes_ += len;
 }
 
-// 不用缓冲区，采用直接IO操作
-//只能读写二进制文件，但效率高、速度 快
-//以只读方式和O_CLOEXEC方式打开一个文件
-FileUtil::ReadSmallFile::ReadSmallFile(StringArg filename)
-    : fd_(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)),
-      err_(0)
-{
-  buf_[0] = '\0';
-  if (fd_ < 0)
-  {
-    err_ = errno;
-  }
-}
-
-FileUtil::ReadSmallFile::~ReadSmallFile()
-{
-  if (fd_ >= 0)
-  {
-    ::close(fd_);
-  }
-}
-
-//返回的是出错号，errno
-template <typename String>
-int FileUtil::ReadSmallFile::readToString(int maxSize,
-                                          String *content,
-                                          int64_t *fileSize,
-                                          int64_t *modifyTime,
-                                          int64_t *createTime)
-{
-  static_assert(sizeof(off_t) == 8, "_FILE_OFFSET_BITS = 64");
-  assert(content != NULL);
-  int err = err_;
-  if (fd_ >= 0)
-  {
-    content->clear();
-
-    if (fileSize)
-    {
-      struct stat statbuf;
-      //获取文件状态信息
-      if (::fstat(fd_, &statbuf) == 0)
-      {
-        //测试是否是普通文件
-        if (S_ISREG(statbuf.st_mode))
-        {
-          //文件的总大小，字节为单位
-          *fileSize = statbuf.st_size;
-          //如果文件大小大于maxsize，也只读maxsize的字节
-          content->reserve(static_cast<int>(std::min(static_cast<int64_t>(maxSize), *fileSize)));
-        }
-        //测试是否是目录
-        else if (S_ISDIR(statbuf.st_mode))
-        {
-          err = EISDIR;
-        }
-        if (modifyTime)
-        {
-          //最后修改时间
-          *modifyTime = statbuf.st_mtime;
-        }
-        if (createTime)
-        {
-          // 最后状态改变时间
-          *createTime = statbuf.st_ctime;
-        }
-      }
-      else
-      {
-        err = errno;
-      }
-    }
-    while (content->size() < static_cast<size_t>(maxSize))
-    {
-      size_t toRead = std::min(static_cast<size_t>(maxSize) - content->size(), sizeof(buf_));
-      //先读入缓冲区buf_中，再读入content中
-      ssize_t n = ::read(fd_, buf_, toRead);
-      if (n > 0)
-      {
-        content->append(buf_, n);
-      }
-      else
-      {
-        if (n < 0)
-        {
-          err = errno;
-        }
-        break;
-      }
-    }
-  }
-  return err;
-}
-
-int FileUtil::ReadSmallFile::readToBuffer(int *size)
-{
-  int err = err_;
-  if (fd_ >= 0)
-  {
-    //pread简单来说就是在指定偏移offset位置开始读取count个字节
-    //于对多线程读写比较有意义，不会相互影响读写文件时的offset
-    //原子操作,不会改变当前文件偏移量
-    ssize_t n = ::pread(fd_, buf_, sizeof(buf_) - 1, 0);
-    if (n >= 0)
-    {
-      if (size)
-      {
-        *size = static_cast<int>(n);
-      }
-      buf_[n] = '\0';
-    }
-    else
-    {
-      err = errno;
-    }
-  }
-  return err;
-}
-
-//显示实例化string作为模板参数的readFile
-template int FileUtil::readFile(StringArg filename,
-                                int maxSize,
-                                string *content,
-                                int64_t *, int64_t *, int64_t *);
-
-template int FileUtil::ReadSmallFile::readToString(
-    int maxSize,
-    string *content,
-    int64_t *, int64_t *, int64_t *);
-
-LogFile::LogFile(const string &basename,
-                 off_t rollSize,
-                 bool threadSafe,
-                 int flushInterval,
-                 int checkEveryN)
-    : basename_(basename),
-      rollSize_(rollSize),
-      flushInterval_(flushInterval),
-      checkEveryN_(checkEveryN),
-      count_(0),
-      mutex_(threadSafe ? new std::mutex() : NULL),
-      startOfPeriod_(0),
-      lastRoll_(0),
-      lastFlush_(0)
-{
-  //验证basename是文件名，不是路径名
-  assert(basename.find('/') == string::npos);
-  rollFile(); //新建一个文件
-}
 
 LogFile::~LogFile() = default;
 
@@ -309,7 +160,7 @@ bool LogFile::rollFile()
     startOfPeriod_ = start;
     //换一个文件
     //释放file_目前指向的对象，并将file_指向新构造的对象
-    file_.reset(new FileUtil::AppendFile(filename));
+    file_.reset(new AppendFile(filename));
     return true;
   }
   return false;

@@ -204,9 +204,3 @@ void Logger::setFlush(FlushFunc flush)
     g_flush = flush;
 }
 
-/* 
-void Logger::setTimeZone(const TimeZone &tz)
-{
-    g_logTimeZone = tz;
-}
-*/
