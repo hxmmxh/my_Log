@@ -42,7 +42,6 @@ public:
     LogFile(const string &basename,
             //off_t指示文件的偏移量
             off_t rollSize, //文件滚动，超过大小rollsize就换下一个文件
-            bool threadSafe = true,
             int flushInterval = 3,   //每隔3秒自动fluah
             int checkEveryN = 1024); //每写入1024次，检查一下
     ~LogFile();
@@ -64,7 +63,7 @@ private:
 
     int count_; //写入的次数
 
-    std::unique_ptr<std::mutex> mutex_;
+    std::mutex mutex_;
     time_t startOfPeriod_;//单位为天
     time_t lastRoll_;//单位为秒
     time_t lastFlush_;//单位为秒

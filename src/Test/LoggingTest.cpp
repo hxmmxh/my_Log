@@ -9,9 +9,9 @@
 using namespace std;
 using namespace hxmmxh;
 
-int g_total;//日志的总字节数
-FILE *g_file;//存储日志的普通文件
-unique_ptr<LogFile> g_logFile;//通过LogFile存储日志内容
+int g_total;                   //日志的总字节数
+FILE *g_file;                  //存储日志的普通文件
+unique_ptr<LogFile> g_logFile; //通过LogFile存储日志内容
 
 void dummyOutput(const char *msg, int len)
 {

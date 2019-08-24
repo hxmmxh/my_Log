@@ -4,9 +4,7 @@
 #define HXMMXH_ASYNCLOGGINGDOUBLEBUFFERING_H
 
 #include "LogStream.h"
-#include "Thread/ThreadPool.h"
 #include "Thread/Thread.h"
-
 #include <atomic>
 #include <condition_variable>
 #include <functional>

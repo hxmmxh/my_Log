@@ -1,3 +1,5 @@
+//主要是测试日志文件的自动滚动功能
+
 #include "../LogFile.h"
 #include "../Logging.h"
 

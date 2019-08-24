@@ -78,7 +78,6 @@ void AppendFile::append(const char *logline, const size_t len)
 
 LogFile::LogFile(const string &basename,
                  off_t rollSize,
-                 bool threadSafe,
                  int flushInterval,
                  int checkEveryN)
     : basename_(basename),
@@ -86,7 +85,6 @@ LogFile::LogFile(const string &basename,
       flushInterval_(flushInterval),
       checkEveryN_(checkEveryN),
       count_(0),
-      mutex_(threadSafe ? new std::mutex() : NULL),
       startOfPeriod_(0),
       lastRoll_(0),
       lastFlush_(0)
@@ -100,15 +98,9 @@ LogFile::~LogFile() = default;
 
 void LogFile::append(const char *logline, int len)
 {
-  if (mutex_)
-  {
-    std::lock_guard<std::mutex> lock(*mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
     append_unlocked(logline, len);
-  }
-  else
-  {
-    append_unlocked(logline, len);
-  }
+
 }
 
 //file_是Append类型对象
@@ -152,15 +144,8 @@ void LogFile::append_unlocked(const char *logline, int len)
 
 void LogFile::flush()
 {
-  if (mutex_)
-  {
-    std::lock_guard<std::mutex> lock(*mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
     file_->flush();
-  }
-  else
-  {
-    file_->flush();
-  }
 }
 
 //日志滚动
