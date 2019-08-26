@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hxm/Project/my_Log/src/Thread/CountDownLatch.h
+mutex
+-
+condition_variable
+-
+
+/home/hxm/Project/my_Log/src/Thread/CurrentThread.h
+string
+-
+
+/home/hxm/Project/my_Log/src/Thread/Test/ThreadTest.cpp
+../CurrentThread.h
+/home/hxm/Project/my_Log/src/Thread/CurrentThread.h
+../Thread.h
+/home/hxm/Project/my_Log/src/Thread/Thread.h
+string
+-
+stdio.h
+-
+unistd.h
+-
+time.h
+-
+
+/home/hxm/Project/my_Log/src/Thread/Thread.h
+CountDownLatch.h
+/home/hxm/Project/my_Log/src/Thread/CountDownLatch.h
+atomic
+-
+functional
+-
+memory
+-
+pthread.h
+-
+string
+-
+

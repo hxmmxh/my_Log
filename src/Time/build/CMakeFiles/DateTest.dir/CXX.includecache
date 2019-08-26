@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hxm/Project/my_Log/src/Time/Comparable.h
+
+/home/hxm/Project/my_Log/src/Time/Date.h
+Comparable.h
+/home/hxm/Project/my_Log/src/Time/Comparable.h
+time.h
+-
+string
+-
+
+/home/hxm/Project/my_Log/src/Time/Test/DateTest.cpp
+../Date.h
+/home/hxm/Project/my_Log/src/Time/Date.h
+iostream
+-
+

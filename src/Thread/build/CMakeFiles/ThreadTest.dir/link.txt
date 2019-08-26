@@ -1,0 +1,1 @@
+/usr/bin/c++  -pthread   CMakeFiles/ThreadTest.dir/Test/ThreadTest.cpp.o  -o bin/ThreadTest lib/libThread.a 
