@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/DateTest.dir/Test/DateTest.cpp.o  -o bin/DateTest lib/libTime.a 

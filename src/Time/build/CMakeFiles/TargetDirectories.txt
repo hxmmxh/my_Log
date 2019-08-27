@@ -1,5 +1,0 @@
-/home/hxm/Project/my_Log/src/Time/build/CMakeFiles/edit_cache.dir
-/home/hxm/Project/my_Log/src/Time/build/CMakeFiles/rebuild_cache.dir
-/home/hxm/Project/my_Log/src/Time/build/CMakeFiles/Time.dir
-/home/hxm/Project/my_Log/src/Time/build/CMakeFiles/TimestampTest.dir
-/home/hxm/Project/my_Log/src/Time/build/CMakeFiles/DateTest.dir

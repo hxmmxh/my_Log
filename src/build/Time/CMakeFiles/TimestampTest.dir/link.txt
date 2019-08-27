@@ -1,1 +1,0 @@
-/usr/bin/c++  -pthread   CMakeFiles/TimestampTest.dir/Test/TimestampTest.cpp.o  -o ../bin/TimestampTest  -L/home/hxm/Project/my_Log/src/build/lib -Wl,-rpath,/home/hxm/Project/my_Log/src/build/lib ../lib/libTime.a 

@@ -1,1 +1,0 @@
-/usr/bin/c++  -pthread   CMakeFiles/LogStreamTest.dir/Test/LogStreamTest.cpp.o  -o bin/LogStreamTest  -L/home/hxm/Project/my_Log/src/build/lib -Wl,-rpath,/home/hxm/Project/my_Log/src/build/lib lib/libLog.a lib/libTime.a lib/libThread.a 
