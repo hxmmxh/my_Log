@@ -1,5 +1,5 @@
 #include "CurrentThread.h"
-#include "../Time/Timestamp.h"
+#include "Timestamp.h"
 
 #include <sys/syscall.h> //syscall
 #include <time.h>        //nanosleep,timespec

@@ -1,6 +1,6 @@
 //测试各种格式的输入
 
-#include "../LogStream.h"
+#include "LogStream.h"
 
 #include <iostream>
 #include <limits>

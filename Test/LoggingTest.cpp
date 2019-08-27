@@ -1,6 +1,6 @@
-#include "../LogFile.h"
-#include "../Logging.h"
-#include "../Thread/ThreadPool.h"
+#include "LogFile.h"
+#include "Logging.h"
+#include "Thread/ThreadPool.h"
 
 #include <stdio.h>
 #include <unistd.h>

@@ -1,6 +1,6 @@
-#include "Thread/CurrentThread.h"
+#include "CurrentThread.h"
 #include "Logging.h"
-#include "Time/Timestamp.h"
+#include "Timestamp.h"
 //#include "TimeZone.h" 该头文件暂时未完成，先用系统的Struct timezone替代
 
 #include <cerrno>
