@@ -4,7 +4,7 @@
 #define HXMMXH_ASYNCLOGGING_RINGBUFFERING_H
 
 #include "LogStream.h"
-#include "Thread/Thread.h"
+#include "Thread.h"
 #include <atomic>
 #include <condition_variable>
 #include <functional>

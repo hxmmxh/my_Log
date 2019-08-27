@@ -2,7 +2,7 @@
 #define HXMMXH_LOGGING_H
 
 #include "LogStream.h"
-#include "Time/Timestamp.h"
+#include "Timestamp.h"
 
 #include <stdio.h>
 #include <time.h>

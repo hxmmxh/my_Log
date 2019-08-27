@@ -100,7 +100,6 @@ void LogFile::append(const char *logline, int len)
 {
     std::lock_guard<std::mutex> lock(mutex_);
     append_unlocked(logline, len);
-
 }
 
 //file_是Append类型对象

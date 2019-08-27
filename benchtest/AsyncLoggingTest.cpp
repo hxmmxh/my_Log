@@ -1,6 +1,6 @@
-#include "../src/AsyncLogging.h"
-#include "../src/Logging.h"
-#include "../src/Time/Timestamp.h"
+#include "AsyncLogging.h"
+#include "Logging.h"
+#include "Timestamp.h"
 
 #include <iostream>
 #include <stdio.h>
@@ -24,19 +24,24 @@ double bench()
 {
     Logger::setOutput(asyncOutput);
 
-    const int kBatch = 1000 * 1000 * 100;
+    const long kBatch = 1000 * 1000 * 10;
     string longstr(100, 'X');
 
+    struct timespec t;
+    t.tv_nsec = 1;
+    t.tv_sec = 0;
+
     Timestamp start = Timestamp::now();
-    for (int i = 0; i < kBatch; ++i)
+    for (long i = 0; i < kBatch; ++i)
     {
         LOG_INFO << longstr;
+        //nanosleep(&t,NULL);
     }
     Timestamp end = Timestamp::now();
     //返回的是秒
     double seconds = timeDifference(end, start);
     double speed = kBatch * 100 / seconds / (1024 * 1024);
-    printf("Async: %f seconds, %d bytes, %10.2f msg/s, %.2f MiB/s\n",
+    printf("Async: %f seconds, %ld bytes, %10.2f msg/s, %.2f MiB/s\n",
            seconds, kBatch * 100, kBatch / seconds, speed);
     return speed;
 }
