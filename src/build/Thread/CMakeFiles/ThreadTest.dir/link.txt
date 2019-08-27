@@ -1,0 +1,1 @@
+/usr/bin/c++  -pthread   CMakeFiles/ThreadTest.dir/Test/ThreadTest.cpp.o  -o ../bin/ThreadTest  -L/home/hxm/Project/my_Log/src/build/lib -Wl,-rpath,/home/hxm/Project/my_Log/src/build/lib ../lib/libThread.a 

@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib/libLog.a  CMakeFiles/Log.dir/AsyncLogging.cpp.o CMakeFiles/Log.dir/AsyncLoggingRingBuffering.cpp.o CMakeFiles/Log.dir/LogFile.cpp.o CMakeFiles/Log.dir/LogStream.cpp.o CMakeFiles/Log.dir/Logging.cpp.o
+/usr/bin/ranlib lib/libLog.a
